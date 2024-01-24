@@ -2,13 +2,7 @@
 name: Deploy transformations
 
 on:
-    push:
-        #branches: [main]
-        branches: [none]
-        paths:
-            - config/transformations/**
-            - .github/workflows/deploy-transformations.yml
-
+    push
 jobs:
     deploy:
         name: Deploy transformations
