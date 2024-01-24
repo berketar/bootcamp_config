@@ -1,27 +1,8 @@
 # Manifest file downloaded from fusion
 externalId: tr-create_asset_hierarchy
 name: create_asset_hierarchy
-query: >-
-  /* MAPPING_MODE_ENABLED: false */
-
-  /* {"version":1,"sourceType":"raw","mappings":[{"from":"","to":"externalId","asType":"STRING"},{"from":"","to":"parentExternalId","asType":"STRING"},{"from":"","to":"source","asType":"STRING"},{"from":"","to":"name","asType":"STRING"},{"from":"","to":"description","asType":"STRING"},{"from":"","to":"metadata","asType":"MAP<STRING, STRING>"},{"from":"","to":"dataSetId","asType":"BIGINT"},{"from":"","to":"labels","asType":"ARRAY<STRING>"}]} */
-
-  SELECT
-    external_id AS externalId,
-    IF(
-      parent_external_id = ''
-      OR parent_external_id IS NULL,
-      '',
-      parent_external_id
-    ) AS parentExternalId,
-    name AS name,
-    json_tuple(metadata,'site','type', 'cycle time', 'Function', 'src', 'Machine type') AS (site, type, cycle_time, function, src, machine_type),
-    to_metadata(site,type, cycle_time, function, src, machine_type) AS metadata,
-    description AS description,
-    'from RAW' AS source,
-    Dataset_id('src:001:sap:ds') AS dataSetId
-  FROM
-    `src:001:sap:db`.assets
+query:
+  file: transformation.sql
 destination:
   type: asset_hierarchy
 ignoreNullFields: true
@@ -60,3 +41,11 @@ action: upsert
 #    - ${SCOPES}
 #   # Optional: If idP requires providing the audience
 #   audience: ${AUDIENCE}
+authentication:
+    clientId: ${COGNITE_CLIENT_ID}
+    clientSecret: ${COGNITE_CLIENT_SECRET}
+    tokenUrl: https://login.microsoftonline.com/16e3985b-ebe8-4e24-9da4-933e21a9fc81/oauth2/v2.0/token
+  # Optional: If idP requires providing the scopes
+    cdfProjectName: ${CDF_PROJECT_NAME}
+    scopes:
+        - https://westeurope-1.cognitedata.com/.default
